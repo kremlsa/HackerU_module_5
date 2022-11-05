@@ -5,7 +5,7 @@ app = Flask (__name__)
 app.secret_key = 'Small HackerU vulnerable app secret'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///prod.db'
 db = SQLAlchemy(app)
-
+# test
 APP_NAME = 'Small HackerU vulnerable app'
 
 CONFIG = {
