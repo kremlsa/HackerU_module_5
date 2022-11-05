@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+{% if session['logged_in'] %}
+</div>
+<link rel= "stylesheet" type= "text/css" href="/static/styles/board.css">
+<div class="wrapper">
+<title>{{ CONFIG['app_name'] }}</title>
+
+<div>
+    <h3> Hello, <div style="display: inline-block;" id="user"></div>.</br> You have access to next functions</h3>
+    <div class="vertical-menu">
+    <a href="/what_ip">What ip of domain</a><br>
+    <a href="/list_users">List all users</a><br></li>
+    </div>
+</div>
+<script>
+window.onload = function() {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", "/api/user?user=session['username']", false );
+    xmlHttp.send( null );
+    document.getElementById('user').innerHTML = xmlHttp.responseText
+};
+</script>
+{% else %}
+<h1>Welcome to Small HackerU vulnerable app</h1>
+
+<!-- <a href="/login">Login</a> 
+<a href="/register">Register</a> -->
+<div class="container">
+	<div class="row" style="margin-top: 40px">
+		<div class="col-sm-6">
+			<ul>
+				<li class="col-sm-6"><a href="/login" class="btn form-control btn-success">Login</a></li>
+				<li class="col-sm-6"><a href="/register" class="btn form-control btn-primary">Register</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+{% if session['logged_in'] %}
+<h3>List users</h3>
+<div>
+    {% for user in users %}
+    <div>{{ user.username| safe }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
