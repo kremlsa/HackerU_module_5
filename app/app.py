@@ -65,10 +65,14 @@ def register():
   return render_template('register.html')
 
 @app.route("/logout")
+
 def logout():
-  """Logout Form"""
-  session['logged_in'] = False
-  return redirect(url_for('home'))
+    if session['logged_in']:
+      """Logout Form"""
+      session['logged_in'] = False
+      return redirect(url_for('home'))
+    else:
+        return redirect('error.html')
   
 
 @app.errorhandler(404)
@@ -86,30 +90,36 @@ def evaluate():
  
 @app.route('/what_ip', methods = ['POST', 'GET'])
 def what_ip():
-    address = None
-    if request.method == 'POST':
-        address = request.form['address']
-    return """
-    <html>
-    <link rel= "stylesheet" type= "text/css" href="/static/styles/board.css"">
-       <body>
-       <div class="wrapper">
-          <form action = "/what_ip" method = "POST">
-             <h1>What IP</h1>
-             <p><h3>Enter address to know ip</h3></p>
-             <p><input type = 'text' name = 'address'/></p>
-             <p><input type = 'submit' value = 'Lookup'/></p>
-          </form>
-         """ + "Result:\n<br>\n" + (rp(address).replace('\n', '\n<br>')  if address else "") + """
-       <a style="text-align:right" href="/">Go back</a>
-       </div>
-       </body>
-    </html>
-    """
+    if session['logged_in']:
+        address = None
+        if request.method == 'POST':
+            address = request.form['address']
+        return """
+        <html>
+        <link rel= "stylesheet" type= "text/css" href="/static/styles/board.css"">
+           <body>
+           <div class="wrapper">
+              <form action = "/what_ip" method = "POST">
+                 <h1>What IP</h1>
+                 <p><h3>Enter address to know ip</h3></p>
+                 <p><input type = 'text' name = 'address'/></p>
+                 <p><input type = 'submit' value = 'Lookup'/></p>
+              </form>
+             """ + "Result:\n<br>\n" + (rp(address).replace('\n', '\n<br>')  if address else "") + """
+           <a style="text-align:right" href="/">Go back</a>
+           </div>
+           </body>
+        </html>
+        """
+    else:
+        return redirect('error.html')
 
 @app.route('/list_users', methods = ['GET'])
 def list_users():
-    return render_template('users.html', users=User.query.all())
+    if session['logged_in']:
+        return render_template('users.html', users=User.query.all())
+    else:
+        return redirect('error.html')
 
 
 
