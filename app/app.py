@@ -48,7 +48,6 @@ def login():
     passw = request.form['password']
     try:
       data = User.query.filter_by(username=name).first()
-      print(data.password)
       if data is not None and bcrypt.checkpw(str.encode(passw), data.password):
         session['logged_in'] = True
         session['username'] = name
@@ -89,8 +88,6 @@ def evaluate():
     if session['logged_in']:
         data = request.args.get('user')
         result = bleach.clean(str(data))
-        print(data)
-        print(result)
         return str(eval(result))
     else:
         return redirect('error.html')
