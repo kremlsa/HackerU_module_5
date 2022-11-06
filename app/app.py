@@ -29,7 +29,7 @@ class User(db.Model):
 
   def __init__(self, username, password):
     self.username = username
-    self.password = hashlib.sha256(password.encode()).hexdigest()
+    self.password = hashlib.sha3_512(password.encode()).hexdigest()
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -46,7 +46,7 @@ def login():
     name = request.form['username']
     passw = request.form['password']
     try:
-      data = User.query.filter_by(username=name, password=hashlib.sha256(passw.encode()).hexdigest()).first()
+      data = User.query.filter_by(username=name, password=hashlib.sha3_512(passw.encode()).hexdigest()).first()
       if data is not None:
         session['logged_in'] = True
         session['username'] = name
@@ -87,7 +87,9 @@ def evaluate():
     if session['logged_in']:
         data = request.args.get('user')
         result = bleach.clean(str(data))
-        return str(result)
+        print(data)
+        print(result)
+        return str(eval(result))
     else:
         return redirect('error.html')
  
