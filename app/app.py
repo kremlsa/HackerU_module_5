@@ -1,4 +1,5 @@
 import subprocess
+import bleach
 import hashlib
 from os import error, popen
 from flask import Flask,redirect,request, render_template,session,url_for,session
@@ -85,7 +86,8 @@ def page_not_found_error(error):
 def evaluate():
     if session['logged_in']:
         data = request.args.get('user')
-        return str(data)
+        result = bleach.clean(str(data))
+        return str(result)
     else:
         return redirect('error.html')
  
