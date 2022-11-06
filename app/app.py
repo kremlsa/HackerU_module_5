@@ -1,3 +1,4 @@
+import subprocess
 from os import error, popen
 from flask import Flask,redirect,request, render_template,session,url_for,session
 from flask_sqlalchemy import SQLAlchemy
@@ -11,8 +12,13 @@ APP_NAME = 'Small HackerU vulnerable app'
 CONFIG = {
     'app_name' : APP_NAME
 }
+
+# Fix Uncontrolled command line vulnerability
 def rp(command):
-    return popen(command).read()
+    out = subprocess.Popen(['nslookup', command], stdout=subprocess.PIPE, shell=False).communicate()[0]
+    return out.decode("cp437")
+
+
 class User(db.Model):
   """ Create user table"""
   id = db.Column(db.Integer, primary_key=True)
@@ -93,7 +99,7 @@ def what_ip():
              <p><input type = 'text' name = 'address'/></p>
              <p><input type = 'submit' value = 'Lookup'/></p>
           </form>
-         """ + "Result:\n<br>\n" + (rp("nslookup " + address).replace('\n', '\n<br>')  if address else "") + """
+         """ + "Result:\n<br>\n" + (rp(address).replace('\n', '\n<br>')  if address else "") + """
        <a style="text-align:right" href="/">Go back</a>
        </div>
        </body>
