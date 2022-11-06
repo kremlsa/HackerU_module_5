@@ -22,14 +22,14 @@ def rp(command):
 
 
 class User(db.Model):
-  """ Create user table"""
+  """ Create user table """
   id = db.Column(db.Integer, primary_key=True)
   username = db.Column(db.String(80), unique=True)
   password = db.Column(db.String(80))
 
   def __init__(self, username, password):
     self.username = username
-    self.password = hashlib.md5(password.encode()).hexdigest()
+    self.password = hashlib.sha256(password.encode()).hexdigest()
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -46,7 +46,7 @@ def login():
     name = request.form['username']
     passw = request.form['password']
     try:
-      data = User.query.filter_by(username=name, password=hashlib.md5(passw.encode()).hexdigest()).first()
+      data = User.query.filter_by(username=name, password=hashlib.sha256(passw.encode()).hexdigest()).first()
       if data is not None:
         session['logged_in'] = True
         session['username'] = name
