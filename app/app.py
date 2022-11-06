@@ -1,9 +1,10 @@
 import subprocess
 import bleach
-import hashlib
+import bcrypt
 from os import error, popen
 from flask import Flask,redirect,request, render_template,session,url_for,session
 from flask_sqlalchemy import SQLAlchemy
+salt = bcrypt.gensalt()
 app = Flask (__name__)
 app.secret_key = 'Small HackerU vulnerable app secret'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///prod.db'
@@ -22,14 +23,14 @@ def rp(command):
 
 
 class User(db.Model):
-  """ Create user table"""
+  """ Create user table """
   id = db.Column(db.Integer, primary_key=True)
   username = db.Column(db.String(80), unique=True)
   password = db.Column(db.String(80))
 
   def __init__(self, username, password):
     self.username = username
-    self.password = hashlib.md5(password.encode()).hexdigest()
+    self.password = bcrypt.hashpw(str.encode(password), salt)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -46,8 +47,8 @@ def login():
     name = request.form['username']
     passw = request.form['password']
     try:
-      data = User.query.filter_by(username=name, password=hashlib.md5(passw.encode()).hexdigest()).first()
-      if data is not None:
+      data = User.query.filter_by(username=name).first()
+      if data is not None and bcrypt.checkpw(str.encode(passw), data.password):
         session['logged_in'] = True
         session['username'] = name
         return redirect(url_for('home'))
@@ -87,7 +88,7 @@ def evaluate():
     if session['logged_in']:
         data = request.args.get('user')
         result = bleach.clean(str(data))
-        return str(result)
+        return str(eval(result))
     else:
         return redirect('error.html')
  
