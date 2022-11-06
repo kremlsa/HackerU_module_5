@@ -1,4 +1,5 @@
 import subprocess
+import hashlib
 from os import error, popen
 from flask import Flask,redirect,request, render_template,session,url_for,session
 from flask_sqlalchemy import SQLAlchemy
@@ -27,7 +28,7 @@ class User(db.Model):
 
   def __init__(self, username, password):
     self.username = username
-    self.password = password
+    self.password = hashlib.md5(password.encode()).hexdigest()
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -44,7 +45,7 @@ def login():
     name = request.form['username']
     passw = request.form['password']
     try:
-      data = User.query.filter_by(username=name, password=passw).first()
+      data = User.query.filter_by(username=name, password=hashlib.md5(passw.encode()).hexdigest()).first()
       if data is not None:
         session['logged_in'] = True
         session['username'] = name
